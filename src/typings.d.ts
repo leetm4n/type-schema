@@ -8,6 +8,7 @@ export interface ISchemaAnnotated extends Schema {
 }
 
 export interface IItemOptions {
+  enum?: { [key: number]: string } | (string | number | null)[];
   minimum?: number;
   maximum?: number;
   format?: TJSONSchemaFormat;
@@ -17,7 +18,6 @@ export interface IItemOptions {
 
 export interface IProperyOptions extends IItemOptions {
   required?: boolean;
-  enum?: { [key: number]: string } | (string | number | null)[];
 }
 
 export interface IArrayPropertyOptions {

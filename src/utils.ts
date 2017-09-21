@@ -57,10 +57,20 @@ export function getJSONSchema(schemaClass: { new(): Schema }) {
             items: getJSONSchema(options.items),
           };
         } else {
+          let itemOptions = {};
+          if (options && options.itemOptions) {
+            itemOptions = _.omit(options.itemOptions, 'enum');
+            if (options.itemOptions.enum) {
+              _.assign(itemOptions, {
+                enum: _.values(options.itemOptions.enum),
+              });
+            }
+          }
           propertyToAdd = {
             ...propertyToAdd,
             type: 'array',
             items: {
+              ...itemOptions,
               type,
             },
           };
@@ -77,7 +87,7 @@ export function getJSONSchema(schemaClass: { new(): Schema }) {
             });
           }
           _.assign(propertyToAdd, {
-            ..._.omit(options, 'required', {}),
+            ..._.omit(options, ['required', 'enum']),
             type,
           });
         }

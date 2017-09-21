@@ -1,0 +1,35 @@
+{
+  "name": "type-schema",
+  "version": "0.0.1",
+  "description": "Define JSON Schemas using TypeScript classes",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/leetm4n/type-schema.git"
+  },
+  "keywords": [
+    "typescript",
+    "json",
+    "schema",
+    "jsonschema",
+    "ajv",
+    "interface",
+    "decorator",
+    "reflection"
+  ],
+  "author": "Peter Esztari",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/lodash": "^4.14.74",
+    "tslint": "^5.7.0",
+    "tslint-config-airbnb": "^5.3.0",
+    "typescript": "^2.5.2"
+  },
+  "dependencies": {
+    "lodash": "^4.17.4",
+    "reflect-metadata": "^0.1.10"
+  }
+}

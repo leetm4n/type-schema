@@ -50,7 +50,7 @@ export const getPropertyKeys = <T>(target: { new(): T }): string[] => {
   return properties || [];
 };
 
-export const setObjectOptions = (target: any, options: IObjectOptions) => {
+export const setObjectOptions = (target: any, options?: IObjectOptions) => {
   if (options) {
     Reflect.defineMetadata(MetadataKeys.OPTIONS, options, Object.getPrototypeOf(new target()));
   }
@@ -84,7 +84,7 @@ export function getJSONSchema<T>(schemaClass: { new(): T }) {
         const type = getType(options.items);
 
         propertyToAdd = {
-          ..._.omit(options, ['required', 'items']),
+          ..._.omit(options, ['required', 'items', 'itemOptions']),
         };
         if (type === PropertyTypes.OBJECT) {
           propertyToAdd = {

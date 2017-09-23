@@ -5,7 +5,12 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "outDir": "lib",
-    "sourceMap": true
+    "sourceMap": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true
   },
   "include": [
     "src/**/*"

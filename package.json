@@ -4,7 +4,8 @@
   "description": "Define JSON Schemas using TypeScript classes",
   "main": "lib/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npm run lint",
+    "lint": "tslint src/**/*.ts"
   },
   "repository": {
     "type": "git",

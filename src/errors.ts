@@ -17,7 +17,19 @@ export class NoSchemaPropertiesError extends Error {
 }
 
 export class NoItemTypeProvidedError extends Error {
-  constructor() {
-    super('Array properties should have items set.');
+  constructor(target: any, key: string) {
+    super(`Property: ${key} of ${target.constructor.name} should have options.items set.`);
+  }
+}
+
+export class PropertyIsNotArrayError extends Error {
+  constructor(target: any, key: string) {
+    super(`Property: ${key} of ${target.constructor.name} is not an array.`);
+  }
+}
+
+export class PropertyIsArrayError extends Error {
+  constructor(target: any, key: string) {
+    super(`Property: ${key} of ${target.constructor.name} is an array.`);
   }
 }

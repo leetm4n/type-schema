@@ -1,46 +1,48 @@
 import * as _ from 'lodash';
 import 'reflect-metadata';
 
-import { IProperyOptions, ISchemaAnnotated, IArrayPropertyOptions, IObjectOptions } from './typings';
-import { Schema } from './schema';
-import { checkOptions } from './utils';
-import { NoItemTypeProvidedError } from './errors';
+import { IProperyOptions, IArrayPropertyOptions, IObjectOptions } from './typings';
+import { PropertyTypes, MetadataKeys } from './enums';
+import { checkOptions, addPropertyKey, getType, setObjectOptions, setPropertyOptions } from './utils';
+import { NoItemTypeProvidedError, PropertyIsNotArrayError, PropertyIsArrayError } from './errors';
 
-export const property = (options?: IProperyOptions) => (target: Schema, key: string) => {
+export const property = (options?: IProperyOptions) => (target: any, key: string) => {
   const type = Reflect.getMetadata('design:type', target, key);
 
+  if (getType(type) === PropertyTypes.ARRAY) {
+    throw new PropertyIsArrayError(target, key);
+  }
+
+  addPropertyKey(key, target);
   checkOptions(type, options);
 
-  const property = { type, key, options, array: false };
+  const propertyOptions = { options, type, array: false };
 
-  const tar = (target as ISchemaAnnotated);
-  if (!tar.properties) {
-    tar.properties = [property];
-  } else {
-    tar.properties.push(property);
-  }
+  setPropertyOptions(target, key, propertyOptions);
 };
 
-export const arrayProperty = (options?: IArrayPropertyOptions) => (target: Schema, key: string) => {
-  const property = { key, options, array: true };
+export const arrayProperty = (options: IArrayPropertyOptions) => (target: any, key: string) => {
+  const type = Reflect.getMetadata(MetadataKeys.TYPE, target, key);
+
+  if (getType(type) !== PropertyTypes.ARRAY) {
+    throw new PropertyIsNotArrayError(target, key);
+  }
 
   if (!options || !options.items) {
-    throw new NoItemTypeProvidedError();
+    throw new NoItemTypeProvidedError(target, key);
   }
 
   const itemOptions = _.get(options, 'itemOptions');
-  checkOptions(options!.items, itemOptions);
+  addPropertyKey(key, target);
+  checkOptions(options.items, itemOptions);
 
-  const tar = target as ISchemaAnnotated;
-  if (!tar.properties) {
-    tar.properties = [property];
-  } else {
-    tar.properties.push(property);
-  }
+  const propertyOptions = { options, array: true };
+
+  setPropertyOptions(target, key, propertyOptions);
 };
 
-export const objectOptions = (options?: IObjectOptions) => <T extends Schema>(target: { new(): T }) => {
-  target.prototype.options = options;
+export const objectOptions = (options?: IObjectOptions) => <T>(target: { new(): T }) => {
+  setObjectOptions(target, options);
 
   return target;
 };

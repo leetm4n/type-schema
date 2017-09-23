@@ -1,18 +1,14 @@
 import * as _ from 'lodash';
 
-import { Schema } from './schema';
-import { PropertyTypes } from './enums';
-import { IItemOptions, ISchemaAnnotated, IArrayPropertyOptions, IProperyOptions } from './typings';
+import { PropertyTypes, MetadataKeys } from './enums';
+import { IItemOptions, IObjectOptions, IArrayPropertyOptions, IProperyOptions, IProperty } from './typings';
 import { InvalidPropertyError, NoSchemaPropertiesError, InvalidTypeError } from './errors';
 
 export const getType = (type: any) => {
-  if (_.includes([Number, String, Boolean, Date], type)) {
+  if (_.includes([Number, String, Boolean, Date, Array], type)) {
     return _.lowerCase(type.name);
-  } else if (new type() instanceof Schema) {
-    return PropertyTypes.OBJECT;
-  } else {
-    throw new InvalidTypeError();
   }
+  return PropertyTypes.OBJECT;
 };
 
 export const checkOptions = (type: any, options?: IItemOptions) => {
@@ -27,18 +23,58 @@ export const checkOptions = (type: any, options?: IItemOptions) => {
   }
 };
 
-export function getJSONSchema(schemaClass: { new(): Schema }) {
-  const schema = new schemaClass();
-  const { properties, options } = (schema as ISchemaAnnotated);
+export const setPropertyOptions = (target: any, key: string, options: IProperty) => {
+  Reflect.defineMetadata(MetadataKeys.OPTIONS, options, target, key);
+};
 
-  if (!properties) {
+export const getPropertyOptions = <T>(target: { new(): T }, key: string) => {
+  const options = Reflect.getMetadata(MetadataKeys.OPTIONS, target.prototype, key);
+
+  return options || {};
+};
+
+export const addPropertyKey = (key: string, target: any) => {
+  const properties = Reflect.getMetadata(MetadataKeys.PROPERTIES, target) as string[] | undefined;
+  if (properties) {
+    properties.push(key);
+
+    Reflect.defineMetadata(MetadataKeys.PROPERTIES, properties, target);
+  } else {
+    Reflect.defineMetadata(MetadataKeys.PROPERTIES, [key], target);
+  }
+};
+
+export const getPropertyKeys = <T>(target: { new(): T }): string[] => {
+  const properties = Reflect.getMetadata(MetadataKeys.PROPERTIES, target.prototype);
+
+  return properties || [];
+};
+
+export const setObjectOptions = (target: any, options: IObjectOptions) => {
+  if (options) {
+    Reflect.defineMetadata(MetadataKeys.OPTIONS, options, Object.getPrototypeOf(new target()));
+  }
+};
+
+export const getObjectOptions = <T>(target: { new(): T }): IObjectOptions => {
+  const options = Reflect.getMetadata(MetadataKeys.OPTIONS, target.prototype);
+
+  return options || {};
+};
+
+export function getJSONSchema<T>(schemaClass: { new(): T }) {
+  const [properties, options] = [getPropertyKeys(schemaClass), getObjectOptions(schemaClass)];
+
+  if (_.isEmpty(properties)) {
     throw new NoSchemaPropertiesError();
   }
 
   const props = _.reduce(
     properties,
-    (state, property) => {
+    (state, propertyKey) => {
       let propertyToAdd = {};
+
+      const property = getPropertyOptions(schemaClass, propertyKey);
 
       const required = _.get(property, 'options.required', false);
 
@@ -95,10 +131,10 @@ export function getJSONSchema(schemaClass: { new(): Schema }) {
 
       return {
         ...state,
-        required: required ? _.union(state.required, [property.key]) : undefined,
+        required: required ? _.union(state.required, [propertyKey]) : undefined,
         properties: {
           ...state.properties,
-          [property.key]: propertyToAdd,
+          [propertyKey]: propertyToAdd,
         },
       };
     },

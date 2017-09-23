@@ -1,11 +1,4 @@
-import { Schema } from './schema';
-
 export type TJSONSchemaFormat = 'date-time' | 'email' | 'hostname' | 'ipv4' | 'ipv6' | 'uri';
-
-export interface ISchemaAnnotated extends Schema {
-  options?: IObjectOptions;
-  properties?: IProperties[];
-}
 
 export interface IItemOptions {
   enum?: { [key: number]: string } | (string | number | null)[];
@@ -33,8 +26,7 @@ export interface IObjectOptions {
   additionalProperties?: boolean;
 }
 
-export interface IProperties {
-  key: string;
+export interface IProperty {
   array: boolean;
   type?: any;
   options?: IProperyOptions | IArrayPropertyOptions;

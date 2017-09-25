@@ -4,13 +4,15 @@ import 'reflect-metadata';
 import { IProperyOptions, IArrayPropertyOptions, IObjectOptions } from './typings';
 import { PropertyTypes, MetadataKeys } from './enums';
 import { checkOptions, addPropertyKey, getType, setObjectOptions, setPropertyOptions } from './utils';
-import { NoItemTypeProvidedError, PropertyIsNotArrayError, PropertyIsArrayError } from './errors';
+import { NoItemTypeProvidedError, PropertyIsNotArrayError, PropertyHasInvalidTypeError } from './errors';
 
 export const property = (options?: IProperyOptions) => (target: any, key: string) => {
   const type = Reflect.getMetadata(MetadataKeys.TYPE, target, key);
 
-  if (getType(type) === PropertyTypes.ARRAY) {
-    throw new PropertyIsArrayError(target, key);
+  const typeName = getType(type);
+  const valid = _.includes(_.omit(_.values(PropertyTypes), PropertyTypes.ARRAY), typeName);
+  if (!valid) {
+    throw new PropertyHasInvalidTypeError(target, key, typeName);
   }
 
   checkOptions(type, options);

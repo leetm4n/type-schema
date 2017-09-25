@@ -5,11 +5,11 @@ import { PropertyTypes, MetadataKeys } from './enums';
 import { IItemOptions, IObjectOptions, IArrayPropertyOptions, IProperyOptions, IProperty } from './typings';
 import { InvalidPropertyError, NoSchemaPropertiesError, InvalidTypeError } from './errors';
 
-export const getType = (type: any) => {
-  if (_.includes([Number, String, Boolean, Date, Array], type)) {
+export const getType = (type?: any) => {
+  if (_.includes([Number, String, Boolean, Date, Array, Object], type)) {
     return _.lowerCase(type.name);
   }
-  return PropertyTypes.OBJECT;
+  throw new InvalidTypeError();
 };
 
 export const checkOptions = (type: any, options?: IItemOptions) => {

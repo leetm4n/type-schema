@@ -1,9 +1,11 @@
 import 'mocha';
 import { expect } from 'chai';
+import * as _ from 'lodash';
 import 'reflect-metadata';
 
 import { MetadataKeys } from '../enums';
 import {
+  getType,
   checkOptions,
   setPropertyOptions,
   getPropertyOptions,
@@ -14,6 +16,22 @@ import {
 } from '../utils';
 
 describe('utils', () => {
+  describe('checkOptions', () => {
+    it('Should throw error if type is undefined or null', () => {
+      try {
+        getType(null);
+      } catch (err) {
+        expect(err.message).to.equal('Type provided is invalid.');
+      }
+    });
+
+    it('Should get type if type provided is valid', () => {
+      _.map([Number, String, Boolean, Date, Array, Object], (type: any) => {
+        expect(_.lowerCase(type.name)).to.equal(getType(type));
+      });
+    });
+  });
+
   describe('checkOptions', () => {
     it('Should throw error if type: String has options.minimum set', () => {
       try {

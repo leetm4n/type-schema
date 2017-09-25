@@ -3,7 +3,8 @@
     "src/"
   ],
   "exclude": [
-    "src/test"
+    "src/test",
+    "src/errors.ts"
   ],
   "extension": [
     ".ts"

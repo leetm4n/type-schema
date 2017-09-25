@@ -33,3 +33,9 @@ export class PropertyHasInvalidTypeError extends Error {
     super(`Property: ${key} of ${target.constructor.name} cannot have type: ${typeName}.`);
   }
 }
+
+export class EnumEmptyError extends Error {
+  constructor() {
+    super('Enum has no values.');
+  }
+}

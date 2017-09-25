@@ -5,6 +5,7 @@ import 'reflect-metadata';
 
 import { MetadataKeys } from '../enums';
 import {
+  checkEnum,
   getType,
   checkOptions,
   setPropertyOptions,
@@ -16,6 +17,44 @@ import {
 } from '../utils';
 
 describe('utils', () => {
+  describe('checkEnum', () => {
+    it('Should throw error if enum has no values (empty array)', () => {
+      try {
+        checkEnum([]);
+      } catch (err) {
+        expect(err.message).to.equal('Enum has no values.');
+      }
+    });
+
+    it('Should throw error if enum has no values (enum)', () => {
+      try {
+        enum E {}
+        checkEnum(E);
+      } catch (err) {
+        expect(err.message).to.equal('Enum has no values.');
+      }
+    });
+
+    it('Should throw error if enum has no values (object)', () => {
+      try {
+        checkEnum({});
+      } catch (err) {
+        expect(err.message).to.equal('Enum has no values.');
+      }
+    });
+
+    it('Should not throw error if enum has values (enum)', () => {
+      enum E {
+        key = 'value',
+      }
+      checkEnum(E);
+    });
+
+    it('Should not throw error if enum has values (mixed array)', () => {
+      checkEnum(['st', null]);
+    });
+  });
+
   describe('checkOptions', () => {
     it('Should throw error if type is undefined or null', () => {
       try {
@@ -26,7 +65,7 @@ describe('utils', () => {
     });
 
     it('Should get type if type provided is valid', () => {
-      _.map([Number, String, Boolean, Date, Array, Object], (type: any) => {
+      _.map([Number, String, Boolean, Array, Object], (type: any) => {
         expect(_.lowerCase(type.name)).to.equal(getType(type));
       });
     });

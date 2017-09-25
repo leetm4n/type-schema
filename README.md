@@ -1,6 +1,6 @@
 # Type-Schema
 
-[![npm](https://img.shields.io/npm/dt/typegoose.svg)]()
+[![npm](https://img.shields.io/npm/dt/type-schema.svg)]()
 
 Define JSON Schemas using TypeScript classes
 

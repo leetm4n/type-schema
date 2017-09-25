@@ -1,0 +1,15 @@
+language: node_js
+node_js:
+- 8
+script:
+- npm run test
+- npm run coverage
+before_deploy:
+- npm run build
+deploy:
+  provider: npm
+  email: peter@codingsans.com
+  api_key:
+    secure: Q+efNy93dXDK9psK1LgB66OvI6+aXvPnTXckdpR+vGveEAYrTcUTJERfCWRJFOHEHIK9HCfQqrF3fKnGXfB1YDTrlLh9Cm6ruwmtzx1xf28uDkE7bWm20Nh83hLdD/l5WzpAi+Nv0glKbjHBrmUu7u1RAvvV7H6sxWccYuLsa2HZzYiHNto6ggEfhMXe4Y84fW4gU+vmBLOc6++PPBdw+WfoGBoPcOQewI+QxDpRyhK2ATKlfUAOFW/hgwSQZ+zgxXEzguzkPI/H7VreFqpbfvGlYGZWI8SXDDDfKJU4JBMbMKH1SlxjVmkLF/ZgD7BR1H3jgOrMWUijgks3eoElqzhh6VOgSN6T4DcghDR7pn67lfubNfIvgR0FVHg2AfpRs6GpbKrMnCqChrPyQA1QUfdUNvzyScPHVJmgxJ4EixJxlJ5yCCg5RyM0WsFPb1AD98aa77C3ez/XRKWVOHcw6eLVJ/wu49pv2kW4EATO6FCkLMihLnB9dmEcar+GgKw2ldTCVShQDSwITyjVIlpfFu24bKYu8jo76PBxMieHHv/9xg9IWGT8OCz/ApwEGkItsNxWZd63kbb2x7/vbMooSqkaZnLdulkBHM2KigcRUb5Tsd1F8H2EqwM7RDWivmmk7Aw8vgFhLm1K4NutLzyMUpPfH86E0PeT856gbz/OChU=
+  on:
+    branch: master

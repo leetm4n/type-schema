@@ -1,0 +1,19 @@
+{
+  "include": [
+    "src/"
+  ],
+  "exclude": [
+    "src/test",
+    "src/errors.ts"
+  ],
+  "extension": [
+    ".ts"
+  ],
+  "statements": 80,
+  "lines": 80,
+  "functions": 80,
+  "branches": 80,
+  "check-coverage": true,
+  "cache": true,
+  "all": true
+}

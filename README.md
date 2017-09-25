@@ -1,5 +1,7 @@
 # Type-Schema
 
+[![Build Status](https://travis-ci.org/leetm4n/type-schema.svg?branch=master)](https://travis-ci.org/leetm4n/type-schema)
+[![Coverage Status](https://coveralls.io/repos/github/leetm4n/type-schema/badge.svg?branch=master)](https://coveralls.io/github/leetm4n/type-schema?branch=master)
 [![npm](https://img.shields.io/npm/dt/type-schema.svg)]()
 
 Define JSON Schemas using TypeScript classes

@@ -3,13 +3,39 @@ import 'reflect-metadata';
 
 import { PropertyTypes, MetadataKeys } from './enums';
 import { IItemOptions, IObjectOptions, IArrayPropertyOptions, IProperyOptions, IProperty } from './typings';
-import { InvalidPropertyError, NoSchemaPropertiesError, InvalidTypeError } from './errors';
+import { InvalidPropertyError, NoSchemaPropertiesError, InvalidTypeError, EnumEmptyError } from './errors';
 
-export const getType = (type: any) => {
-  if (_.includes([Number, String, Boolean, Date, Array], type)) {
+export const getEnumArray = (enumCandidate: any) => {
+  const values = _.values(enumCandidate);
+
+  if (_.isEmpty(values)) {
+    throw new EnumEmptyError();
+  }
+
+  if (_.isArray(enumCandidate)) {
+    return enumCandidate;
+  }
+  return _.reduce(
+    enumCandidate,
+    (state, value, key) => {
+      const num = _.toNumber(key);
+      if (_.isNaN(num)) {
+        return [...state, value];
+      }
+      return state;
+    },
+    [],
+  );
+};
+
+export const getType = (type?: any) => {
+  if (_.includes([Number, String, Boolean, Array, Object], type)) {
     return _.lowerCase(type.name);
   }
-  return PropertyTypes.OBJECT;
+  if (type && type.prototype) {
+    return PropertyTypes.SCHEMA;
+  }
+  throw new InvalidTypeError();
 };
 
 export const checkOptions = (type: any, options?: IItemOptions) => {
@@ -87,7 +113,7 @@ export function getJSONSchema<T>(schemaClass: { new(): T }) {
         propertyToAdd = {
           ..._.omit(options, ['required', 'items', 'itemOptions']),
         };
-        if (type === PropertyTypes.OBJECT) {
+        if (type === PropertyTypes.SCHEMA) {
           propertyToAdd = {
             ...propertyToAdd,
             type: 'array',
@@ -96,12 +122,7 @@ export function getJSONSchema<T>(schemaClass: { new(): T }) {
         } else {
           let itemOptions = {};
           if (options && options.itemOptions) {
-            itemOptions = _.omit(options.itemOptions, 'enum');
-            if (options.itemOptions.enum) {
-              _.assign(itemOptions, {
-                enum: _.values(options.itemOptions.enum),
-              });
-            }
+            itemOptions = options.itemOptions;
           }
           propertyToAdd = {
             ...propertyToAdd,
@@ -116,28 +137,33 @@ export function getJSONSchema<T>(schemaClass: { new(): T }) {
         const options = property.options as IProperyOptions;
         const type = getType(property.type);
         if (type === PropertyTypes.OBJECT) {
-          propertyToAdd = getJSONSchema(property.type);
-        } else {
           if (options && options.enum) {
             _.assign(propertyToAdd, {
-              enum: _.values(options.enum),
+              enum: options.enum,
             });
           }
+        } else if (type === PropertyTypes.SCHEMA) {
+          propertyToAdd = getJSONSchema(property.type);
+        } else {
           _.assign(propertyToAdd, {
-            ..._.omit(options, ['required', 'enum']),
+            ..._.omit(options, ['required']),
             type,
           });
         }
       }
 
-      return {
-        ...state,
-        required: required ? _.union(state.required, [propertyKey]) : state.required,
-        properties: {
-          ...state.properties,
-          [propertyKey]: propertyToAdd,
+      // Remove required array if empty.
+      return _.pickBy(
+        {
+          ...state,
+          required: required ? _.union(state.required, [propertyKey]) : state.required,
+          properties: {
+            ...state.properties,
+            [propertyKey]: propertyToAdd,
+          },
         },
-      };
+        _.identity,
+      );
     },
     {
       type: PropertyTypes.OBJECT,

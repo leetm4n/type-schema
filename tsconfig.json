@@ -10,12 +10,10 @@
     "noImplicitAny": true,
     "strictNullChecks": true,
     "noImplicitThis": true,
-    "alwaysStrict": true,
-    "typeRoots": [
-      "./src/typings"
-    ]
+    "alwaysStrict": true
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "src/test"
   ]
 }

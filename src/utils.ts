@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+import 'reflect-metadata';
 
 import { PropertyTypes, MetadataKeys } from './enums';
 import { IItemOptions, IObjectOptions, IArrayPropertyOptions, IProperyOptions, IProperty } from './typings';
@@ -117,7 +118,7 @@ export function getJSONSchema<T>(schemaClass: { new(): T }) {
         if (type === PropertyTypes.OBJECT) {
           propertyToAdd = getJSONSchema(property.type);
         } else {
-          if (options.enum) {
+          if (options && options.enum) {
             _.assign(propertyToAdd, {
               enum: _.values(options.enum),
             });
@@ -131,7 +132,7 @@ export function getJSONSchema<T>(schemaClass: { new(): T }) {
 
       return {
         ...state,
-        required: required ? _.union(state.required, [propertyKey]) : undefined,
+        required: required ? _.union(state.required, [propertyKey]) : state.required,
         properties: {
           ...state.properties,
           [propertyKey]: propertyToAdd,

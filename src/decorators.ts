@@ -7,14 +7,14 @@ import { checkOptions, addPropertyKey, getType, setObjectOptions, setPropertyOpt
 import { NoItemTypeProvidedError, PropertyIsNotArrayError, PropertyIsArrayError } from './errors';
 
 export const property = (options?: IProperyOptions) => (target: any, key: string) => {
-  const type = Reflect.getMetadata('design:type', target, key);
+  const type = Reflect.getMetadata(MetadataKeys.TYPE, target, key);
 
   if (getType(type) === PropertyTypes.ARRAY) {
     throw new PropertyIsArrayError(target, key);
   }
 
-  addPropertyKey(key, target);
   checkOptions(type, options);
+  addPropertyKey(key, target);
 
   const propertyOptions = { options, type, array: false };
 
@@ -33,8 +33,8 @@ export const arrayProperty = (options: IArrayPropertyOptions) => (target: any, k
   }
 
   const itemOptions = _.get(options, 'itemOptions');
-  addPropertyKey(key, target);
   checkOptions(options.items, itemOptions);
+  addPropertyKey(key, target);
 
   const propertyOptions = { options, array: true };
 

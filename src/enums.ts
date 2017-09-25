@@ -5,6 +5,7 @@ export enum PropertyTypes {
   BOOLEAN = 'boolean',
   OBJECT = 'object',
   ARRAY = 'array',
+  SCHEMA = 'schema',
 }
 
 export enum MetadataKeys {

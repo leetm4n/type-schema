@@ -216,5 +216,163 @@ describe('utils', () => {
         },
       });
     });
+
+    it('Should get object with array property', () => {
+      class Schema {
+        @arrayProperty({ items: String })
+        arr: string[];
+      }
+
+      const schema = getJSONSchema(Schema);
+
+      expect(schema).to.eql({
+        type: 'object',
+        properties: {
+          arr: {
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+          },
+        },
+      });
+    });
+
+    it('Should get object with array property and array options', () => {
+      class Schema {
+        @arrayProperty({ items: Number, minItems: 2, maxItems: 3 })
+        arr: number[];
+      }
+
+      const schema = getJSONSchema(Schema);
+
+      expect(schema).to.eql({
+        type: 'object',
+        properties: {
+          arr: {
+            type: 'array',
+            minItems: 2,
+            maxItems: 3,
+            items: {
+              type: 'number',
+            },
+          },
+        },
+      });
+    });
+
+    it('Should get object with array property and item options', () => {
+      class Schema {
+        @arrayProperty({ items: Number, itemOptions: { minimum: 2, enum: [0, 1] } })
+        arr: number[];
+      }
+
+      const schema = getJSONSchema(Schema);
+
+      expect(schema).to.eql({
+        type: 'object',
+        properties: {
+          arr: {
+            type: 'array',
+            items: {
+              type: 'number',
+              minimum: 2,
+              enum: [0, 1],
+            },
+          },
+        },
+      });
+    });
+
+    it('Should get object with array property and item options', () => {
+      enum StrEnum {
+        key = 'value',
+      }
+      class Schema {
+        @arrayProperty({ items: String, itemOptions: { minLength: 2, enum: StrEnum } })
+        arr: StrEnum[];
+      }
+
+      const schema = getJSONSchema(Schema);
+
+      expect(schema).to.eql({
+        type: 'object',
+        properties: {
+          arr: {
+            type: 'array',
+            items: {
+              type: 'string',
+              minLength: 2,
+              enum: ['value'],
+            },
+          },
+        },
+      });
+    });
+
+    it('Should get object with nested object and its options', () => {
+      @objectOptions({ additionalProperties: true })
+      class SubSchema {
+        @property({ required: true })
+        prop: string;
+      }
+      class Schema {
+        @property({ required: true })
+        sub: SubSchema;
+      }
+
+      const schema = getJSONSchema(Schema);
+
+      expect(schema).to.eql({
+        type: 'object',
+        properties: {
+          sub: {
+            type: 'object',
+            additionalProperties: true,
+            properties: {
+              prop: {
+                type: 'string',
+              },
+            },
+            required: ['prop'],
+          },
+        },
+        required: ['sub'],
+      });
+    });
+
+    it('Should get object with nested array of objects and their options', () => {
+      @objectOptions({ additionalProperties: true })
+      class SubSchema {
+        @property({ required: true })
+        prop: string;
+      }
+      class Schema {
+        @arrayProperty({ required: true, items: SubSchema })
+        subs: SubSchema[];
+      }
+
+      const schema = getJSONSchema(Schema);
+
+      expect(schema).to.eql({
+        type: 'object',
+        properties: {
+          subs: {
+            type: 'array',
+            items: {
+              type: 'object',
+              additionalProperties: true,
+              properties: {
+                prop: {
+                  type: 'string',
+                },
+              },
+              required: ['prop'],
+            },
+          },
+        },
+        required: ['subs'],
+      });
+    });
   });
 });

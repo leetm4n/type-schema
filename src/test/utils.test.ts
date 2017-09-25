@@ -5,7 +5,7 @@ import 'reflect-metadata';
 
 import { MetadataKeys } from '../enums';
 import {
-  checkEnum,
+  getEnumArray,
   getType,
   checkOptions,
   setPropertyOptions,
@@ -17,10 +17,10 @@ import {
 } from '../utils';
 
 describe('utils', () => {
-  describe('checkEnum', () => {
+  describe('getEnumArray', () => {
     it('Should throw error if enum has no values (empty array)', () => {
       try {
-        checkEnum([]);
+        getEnumArray([]);
       } catch (err) {
         expect(err.message).to.equal('Enum has no values.');
       }
@@ -29,7 +29,7 @@ describe('utils', () => {
     it('Should throw error if enum has no values (enum)', () => {
       try {
         enum E {}
-        checkEnum(E);
+        getEnumArray(E);
       } catch (err) {
         expect(err.message).to.equal('Enum has no values.');
       }
@@ -37,21 +37,40 @@ describe('utils', () => {
 
     it('Should throw error if enum has no values (object)', () => {
       try {
-        checkEnum({});
+        getEnumArray({});
       } catch (err) {
         expect(err.message).to.equal('Enum has no values.');
       }
     });
 
-    it('Should not throw error if enum has values (enum)', () => {
+    it('Should not throw error if enum has values (string enum)', () => {
       enum E {
         key = 'value',
       }
-      checkEnum(E);
+      const enumArray = getEnumArray(E);
+      expect(enumArray).to.eql(['value']);
+    });
+
+    it('Should not throw error if enum has values (number enum)', () => {
+      enum E {
+        key = 2,
+      }
+      const enumArray = getEnumArray(E);
+      expect(enumArray).to.eql([2]);
+    });
+
+    it('Should not throw error if enum has values (mixed enum)', () => {
+      enum E {
+        key = 'value',
+        key2 = 1,
+      }
+      const enumArray = getEnumArray(E);
+      expect(enumArray).to.eql(['value', 1]);
     });
 
     it('Should not throw error if enum has values (mixed array)', () => {
-      checkEnum(['st', null]);
+      const enumArray = getEnumArray(['st', null]);
+      expect(enumArray).to.eql(['st', null]);
     });
   });
 

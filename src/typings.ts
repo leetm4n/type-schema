@@ -13,6 +13,11 @@ export interface IProperyOptions extends IItemOptions {
   required?: boolean;
 }
 
+export interface IRawPropertyOptions {
+  jsonSchema: object;
+  required?: boolean;
+}
+
 export interface IArrayPropertyOptions {
   required?: boolean;
   items: any;
@@ -27,7 +32,8 @@ export interface IObjectOptions {
 }
 
 export interface IProperty {
-  array: boolean;
+  array?: boolean;
+  raw?: boolean;
   type?: any;
-  options?: IProperyOptions | IArrayPropertyOptions;
+  options?: IProperyOptions | IArrayPropertyOptions | IRawPropertyOptions;
 }

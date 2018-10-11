@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import 'reflect-metadata';
 
-import { IProperyOptions, IArrayPropertyOptions, IObjectOptions } from './typings';
+import { IProperyOptions, IArrayPropertyOptions, IObjectOptions, IRawPropertyOptions } from './typings';
 import { PropertyTypes, MetadataKeys } from './enums';
 import { checkOptions, addPropertyKey, getType, setObjectOptions, setPropertyOptions, getEnumArray } from './utils';
 import { NoItemTypeProvidedError, PropertyIsNotArrayError, PropertyHasInvalidTypeError } from './errors';
@@ -23,6 +23,13 @@ export const property = (options?: IProperyOptions) => (target: any, key: string
 
   const propertyOptions = { options, type, array: false };
 
+  setPropertyOptions(target, key, propertyOptions);
+};
+
+export const rawProperty = (options: IRawPropertyOptions) => (target: any, key: string) => {
+  addPropertyKey(key, target);
+
+  const propertyOptions = { options, raw: true };
   setPropertyOptions(target, key, propertyOptions);
 };
 

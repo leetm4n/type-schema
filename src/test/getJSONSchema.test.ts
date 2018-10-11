@@ -1,7 +1,7 @@
 import 'mocha';
 import { expect } from 'chai';
 
-import { property, arrayProperty, objectOptions } from '../decorators';
+import { property, arrayProperty, objectOptions, rawProperty } from '../decorators';
 import { getJSONSchema } from '../utils';
 
 describe('utils', () => {
@@ -9,7 +9,7 @@ describe('utils', () => {
     it('Should get object with property string', () => {
       class Schema {
         @property({ required: true })
-        str: string;
+        str!: string;
       }
 
       const schema = getJSONSchema(Schema);
@@ -28,7 +28,7 @@ describe('utils', () => {
     it('Should get object with property number', () => {
       class Schema {
         @property()
-        number: number;
+        number!: number;
       }
 
       const schema = getJSONSchema(Schema);
@@ -46,7 +46,7 @@ describe('utils', () => {
     it('Should get object with property number and its options', () => {
       class Schema {
         @property({ maximum: 3, minimum: 2 })
-        number: number;
+        number!: number;
       }
 
       const schema = getJSONSchema(Schema);
@@ -66,7 +66,7 @@ describe('utils', () => {
     it('Should get object with property string and its options', () => {
       class Schema {
         @property({ maxLength: 3, minLength: 2, format: 'ipv4' })
-        string: string;
+        string!: string;
       }
 
       const schema = getJSONSchema(Schema);
@@ -100,7 +100,7 @@ describe('utils', () => {
       @objectOptions({ $async: true, additionalProperties: true })
       class Schema {
         @property({ required: true })
-        number: number;
+        number!: number;
       }
 
       const schema = getJSONSchema(Schema);
@@ -121,7 +121,7 @@ describe('utils', () => {
     it('Should get object with property boolean', () => {
       class Schema {
         @property()
-        bool: boolean;
+        bool!: boolean;
       }
 
       const schema = getJSONSchema(Schema);
@@ -139,7 +139,7 @@ describe('utils', () => {
     it('Should get object with mixed enum property', () => {
       class Schema {
         @property({ enum: ['str', null] })
-        mixed: null | string;
+        mixed!: null | string;
       }
 
       const schema = getJSONSchema(Schema);
@@ -159,8 +159,8 @@ describe('utils', () => {
         key = 'value',
       }
       class Schema {
-        @property({ enum: E })
-        enum: E;
+        @property({ enum!: E })
+        enum!: E;
       }
 
       const schema = getJSONSchema(Schema);
@@ -181,8 +181,8 @@ describe('utils', () => {
         key = 4,
       }
       class Schema {
-        @property({ enum: E })
-        enum: E;
+        @property({ enum!: E })
+        enum!: E;
       }
 
       const schema = getJSONSchema(Schema);
@@ -201,7 +201,7 @@ describe('utils', () => {
     it('Should get object with array enum property', () => {
       class Schema {
         @property({ enum: ['value'] })
-        enum: 'value';
+        enum!: 'value';
       }
 
       const schema = getJSONSchema(Schema);
@@ -220,7 +220,7 @@ describe('utils', () => {
     it('Should get object with array property', () => {
       class Schema {
         @arrayProperty({ items: String })
-        arr: string[];
+        arr!: string[];
       }
 
       const schema = getJSONSchema(Schema);
@@ -241,7 +241,7 @@ describe('utils', () => {
     it('Should get object with array property and array options', () => {
       class Schema {
         @arrayProperty({ items: Number, minItems: 2, maxItems: 3 })
-        arr: number[];
+        arr!: number[];
       }
 
       const schema = getJSONSchema(Schema);
@@ -264,7 +264,7 @@ describe('utils', () => {
     it('Should get object with array property and item options', () => {
       class Schema {
         @arrayProperty({ items: Number, itemOptions: { minimum: 2, enum: [0, 1] } })
-        arr: number[];
+        arr!: number[];
       }
 
       const schema = getJSONSchema(Schema);
@@ -290,7 +290,7 @@ describe('utils', () => {
       }
       class Schema {
         @arrayProperty({ items: String, itemOptions: { minLength: 2, enum: StrEnum } })
-        arr: StrEnum[];
+        arr!: StrEnum[];
       }
 
       const schema = getJSONSchema(Schema);
@@ -314,11 +314,11 @@ describe('utils', () => {
       @objectOptions({ additionalProperties: true })
       class SubSchema {
         @property({ required: true })
-        prop: string;
+        prop!: string;
       }
       class Schema {
         @property({ required: true })
-        sub: SubSchema;
+        sub!: SubSchema;
       }
 
       const schema = getJSONSchema(Schema);
@@ -341,15 +341,34 @@ describe('utils', () => {
       });
     });
 
+    it('Should get object with raw json schema', () => {
+      class Schema {
+        @rawProperty({ jsonSchema: { type: 'number' }, required: true })
+        str!: any;
+      }
+
+      const schema = getJSONSchema(Schema);
+
+      expect(schema).to.eql({
+        type: 'object',
+        properties: {
+          str: {
+            type: 'number',
+          },
+        },
+        required: ['str'],
+      });
+    });
+
     it('Should get object with nested array of objects and their options', () => {
       @objectOptions({ additionalProperties: true })
       class SubSchema {
         @property({ required: true })
-        prop: string;
+        prop!: string;
       }
       class Schema {
         @arrayProperty({ required: true, items: SubSchema })
-        subs: SubSchema[];
+        subs!: SubSchema[];
       }
 
       const schema = getJSONSchema(Schema);

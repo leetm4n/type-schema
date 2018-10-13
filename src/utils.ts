@@ -24,7 +24,7 @@ export const getEnumArray = (enumCandidate: any) => {
       }
       return state;
     },
-    [],
+    [] as unknown[],
   );
 };
 
@@ -105,7 +105,11 @@ export function getJSONSchema<T>(schemaClass: { new(): T }) {
 
       const required = _.get(property, 'options.required', false);
 
-      if (property.array) {
+      if (property.raw) {
+        propertyToAdd = {
+          ...property.options.jsonSchema,
+        };
+      } else if (property.array) {
         const options = property.options as IArrayPropertyOptions;
 
         const type = getType(options.items);

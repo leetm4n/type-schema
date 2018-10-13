@@ -142,7 +142,7 @@ describe('utils', () => {
 
   describe('setPropertyOptions', () => {
     class Schema {
-      prop: string;
+      prop!: string;
     }
 
     it('Should set property options', () => {
@@ -156,7 +156,7 @@ describe('utils', () => {
 
   describe('getPropertyOptions', () => {
     class Schema {
-      prop: string;
+      prop!: string;
     }
 
     it('Should set property options', () => {

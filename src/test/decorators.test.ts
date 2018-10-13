@@ -3,7 +3,7 @@ import 'reflect-metadata';
 import { expect } from 'chai';
 
 import { MetadataKeys } from '../enums';
-import { property, arrayProperty, objectOptions } from '../decorators';
+import { property, arrayProperty, objectOptions, rawProperty } from '../decorators';
 
 describe('decorators', () => {
   describe('property', () => {
@@ -11,7 +11,7 @@ describe('decorators', () => {
       try {
         class Schema {
           @property({ required: true })
-          prop: string[];
+          prop!: string[];
         }
       } catch (err) {
         expect(err.message).to.equal('Property: prop of Schema cannot have type: array.');
@@ -21,7 +21,7 @@ describe('decorators', () => {
     it('Should not throw PropertyHasInvalidTypeError if property has valid type', () => {
       class Schema {
         @property({ required: true })
-        prop: string;
+        prop!: string;
       }
     });
   });
@@ -30,7 +30,7 @@ describe('decorators', () => {
       try {
         class Schema {
           @arrayProperty({ items: String })
-          arrayProp: string;
+          arrayProp!: string;
         }
       } catch (err) {
         expect(err.message).to.equal('Property: arrayProp of Schema is not an array.');
@@ -40,16 +40,26 @@ describe('decorators', () => {
     it('Should not throw PropertyIsNotArrayError if arrayProperty is an array', () => {
       class Schema {
         @arrayProperty({ items: String })
-        propArray: string[];
+        propArray!: string[];
       }
     });
   });
+
+  describe('rawProperty', () => {
+    it('Should decorate', () => {
+      class Schema {
+        @rawProperty({ jsonSchema: { type: 'string' } })
+        arrayProp!: string;
+      }
+    });
+  });
+
   describe('objectOptions', () => {
     it('Should set object options for schema', () => {
       const options = { additionalProperties: false };
 
       class Schema {
-        prop: string;
+        prop!: string;
       }
       objectOptions(options)(Schema);
 

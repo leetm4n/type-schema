@@ -63,9 +63,7 @@ export const getPropertyOptions = <T>(target: { new(): T }, key: string) => {
 export const addPropertyKey = (key: string, target: any) => {
   const properties = Reflect.getMetadata(MetadataKeys.PROPERTIES, target) as string[] | undefined;
   if (properties) {
-    properties.push(key);
-
-    Reflect.defineMetadata(MetadataKeys.PROPERTIES, properties, target);
+    Reflect.defineMetadata(MetadataKeys.PROPERTIES, [...properties, key], target);
   } else {
     Reflect.defineMetadata(MetadataKeys.PROPERTIES, [key], target);
   }
